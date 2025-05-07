@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\File;
 class LaravelBloomFilterCommand extends Command
 {
     protected $signature = 'bloom-filter:make {name : The name of the Bloom filter class}';
+
     protected $description = 'Create a new Bloom filter class';
 
     public function handle()
@@ -15,15 +16,16 @@ class LaravelBloomFilterCommand extends Command
         $name = $this->argument('name');
         $stub = $this->getStub();
         $stub = str_replace('{{name}}', $name, $stub);
-        
+
         $path = app_path("BloomFilters/{$name}.php");
-        
-        if (!File::exists(app_path('BloomFilters'))) {
+
+        if (! File::exists(app_path('BloomFilters'))) {
             File::makeDirectory(app_path('BloomFilters'), 0755, true);
         }
 
         if (File::exists($path)) {
             $this->error("Bloom filter class {$name} already exists!");
+
             return;
         }
 

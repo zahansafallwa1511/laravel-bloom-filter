@@ -2,9 +2,9 @@
 
 namespace Intimation\LaravelBloomFilter;
 
+use Intimation\LaravelBloomFilter\Commands\LaravelBloomFilterCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Intimation\LaravelBloomFilter\Commands\LaravelBloomFilterCommand;
 
 class LaravelBloomFilterServiceProvider extends PackageServiceProvider
 {
@@ -22,5 +22,4 @@ class LaravelBloomFilterServiceProvider extends PackageServiceProvider
             ->hasMigration('create_laravel_bloom_filter_table')
             ->hasCommand(LaravelBloomFilterCommand::class);
     }
-
 }

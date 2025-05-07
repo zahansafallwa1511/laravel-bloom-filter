@@ -4,4 +4,4 @@ namespace Intimation\LaravelBloomFilter\Exceptions;
 
 use Exception;
 
-class RedisCompatibilityException extends Exception {} 
+class RedisCompatibilityException extends Exception {}
