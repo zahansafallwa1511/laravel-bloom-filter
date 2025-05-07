@@ -26,31 +26,6 @@ composer require zahansafallwa1511/laravel-bloom-filter
 - Laravel 8.0 or higher
 - Redis server with Redis extension for PHP
 
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --tag="laravel-bloom-filter-migrations"
-php artisan migrate
-```
-
-You can publish the config file with:
-
-```bash
-php artisan vendor:publish --tag="laravel-bloom-filter-config"
-```
-
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="laravel-bloom-filter-views"
-```
 
 ## Usage
 
