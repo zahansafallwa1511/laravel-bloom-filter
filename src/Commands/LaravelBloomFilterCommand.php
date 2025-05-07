@@ -33,13 +33,13 @@ class LaravelBloomFilterCommand extends Command
         $this->info("Bloom filter class {$name} created successfully!");
         $this->info("Path: {$path}");
         $this->info("\nDon't forget to register your Bloom filter in a service provider:");
-        $this->info("```php");
+        $this->info('```php');
         $this->info("use App\\BloomFilters\\{$name};");
-        $this->info("");
+        $this->info('');
         $this->info("\$this->app->singleton('{$name}', function (\$app) {");
         $this->info("    return new {$name}();");
-        $this->info("});");
-        $this->info("```");
+        $this->info('});');
+        $this->info('```');
     }
 
     protected function getStub(): string

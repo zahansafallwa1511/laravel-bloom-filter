@@ -2,17 +2,20 @@
 
 namespace Intimation\LaravelBloomFilter;
 
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Contracts\Cache\Store;
 use Exception;
+use Illuminate\Support\Facades\Cache;
 use Intimation\LaravelBloomFilter\Exceptions\RedisCompatibilityException;
 
 class BloomFilter
 {
     protected string $key;
+
     protected int $hashCount;
+
     protected int $size;
+
     protected string $hashAlgorithm;
+
     protected static array $allowedAlgorithms = ['crc32', 'md5', 'sha1'];
 
     /**
@@ -28,7 +31,7 @@ class BloomFilter
         $this->key = $key;
         $this->size = $size;
         $this->hashCount = $hashCount;
-        if (!in_array($hashAlgorithm, static::$allowedAlgorithms)) {
+        if (! in_array($hashAlgorithm, static::$allowedAlgorithms)) {
             throw new Exception("Unsupported hash algorithm: $hashAlgorithm");
         }
         $this->hashAlgorithm = $hashAlgorithm;
@@ -37,7 +40,7 @@ class BloomFilter
     protected function ensureRedisCompatibility(): void
     {
         $store = Cache::getStore();
-        if (!($store instanceof \Illuminate\Cache\RedisStore)) {
+        if (! ($store instanceof \Illuminate\Cache\RedisStore)) {
             throw new RedisCompatibilityException('Cache store is not Redis compatible.');
         }
     }
@@ -52,10 +55,11 @@ class BloomFilter
     public function exists(string $value): bool
     {
         foreach ($this->getHashes($value) as $hash) {
-            if (!Cache::getBit($this->key, $hash)) {
+            if (! Cache::getBit($this->key, $hash)) {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -63,7 +67,7 @@ class BloomFilter
     {
         $hashes = [];
         for ($i = 0; $i < $this->hashCount; $i++) {
-            $data = $value . $i;
+            $data = $value.$i;
             switch ($this->hashAlgorithm) {
                 case 'crc32':
                     $hash = abs(crc32($data));
@@ -79,6 +83,7 @@ class BloomFilter
             }
             $hashes[] = $hash % $this->size;
         }
+
         return $hashes;
     }
 
