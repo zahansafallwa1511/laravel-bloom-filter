@@ -3,8 +3,8 @@
 namespace Intimation\LaravelBloomFilter\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Orchestra\Testbench\TestCase as Orchestra;
 use Intimation\LaravelBloomFilter\LaravelBloomFilterServiceProvider;
+use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {

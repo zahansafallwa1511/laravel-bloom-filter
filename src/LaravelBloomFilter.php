@@ -2,17 +2,20 @@
 
 namespace Intimation\LaravelBloomFilter;
 
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Contracts\Cache\Store;
 use Exception;
+use Illuminate\Support\Facades\Cache;
 use Intimation\LaravelBloomFilter\Exceptions\RedisCompatibilityException;
 
 abstract class BloomFilter
 {
     protected string $key;
+
     protected int $hashCount;
+
     protected int $size;
+
     protected string $hashAlgorithm;
+
     protected static array $allowedAlgorithms = ['crc32', 'md5', 'sha1'];
 
     /**
@@ -26,7 +29,7 @@ abstract class BloomFilter
         $this->hashCount = $this->getHashCount();
         $this->hashAlgorithm = $this->getHashAlgorithm();
 
-        if (!in_array($this->hashAlgorithm, static::$allowedAlgorithms)) {
+        if (! in_array($this->hashAlgorithm, static::$allowedAlgorithms)) {
             throw new Exception("Unsupported hash algorithm: {$this->hashAlgorithm}");
         }
     }
@@ -66,7 +69,7 @@ abstract class BloomFilter
     protected function ensureRedisCompatibility(): void
     {
         $store = Cache::getStore();
-        if (!($store instanceof \Illuminate\Cache\RedisStore)) {
+        if (! ($store instanceof \Illuminate\Cache\RedisStore)) {
             throw new RedisCompatibilityException('Cache store is not Redis compatible.');
         }
     }
@@ -81,10 +84,11 @@ abstract class BloomFilter
     public function exists(string $value): bool
     {
         foreach ($this->getHashes($value) as $hash) {
-            if (!Cache::getBit($this->key, $hash)) {
+            if (! Cache::getBit($this->key, $hash)) {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -92,7 +96,7 @@ abstract class BloomFilter
     {
         $hashes = [];
         for ($i = 0; $i < $this->hashCount; $i++) {
-            $data = $value . $i;
+            $data = $value.$i;
             switch ($this->hashAlgorithm) {
                 case 'crc32':
                     $hash = abs(crc32($data));
@@ -108,6 +112,7 @@ abstract class BloomFilter
             }
             $hashes[] = $hash % $this->size;
         }
+
         return $hashes;
     }
 
