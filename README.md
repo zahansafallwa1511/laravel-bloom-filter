@@ -26,61 +26,17 @@ composer require zahansafallwa1511/laravel-bloom-filter
 - Laravel 8.0 or higher
 - Redis server with Redis extension for PHP
 
-
 ## Usage
 
-### Creating a Bloom Filter
-
-You can create a new Bloom filter class using the artisan command:
-
-```bash
-php artisan bloom-filter:make UserEmailFilter
-```
-
-This will create a new class in `app/BloomFilters/UserEmailFilter.php` with all the necessary methods to override.
-
-### Example Implementation
+### Basic Usage
 
 ```php
-namespace App\BloomFilters;
-
 use Intimation\LaravelBloomFilter\BloomFilter;
-
-class UserEmailFilter extends BloomFilter
-{
-    protected function getKey(): string
-    {
-        return 'users_email_filter';
-    }
-
-    protected function getSize(): int
-    {
-        return 1000000; // Size based on expected number of items
-    }
-
-    protected function getHashCount(): int
-    {
-        return 7; // Number of hash functions
-    }
-
-    protected function getHashAlgorithm(): string
-    {
-        return 'md5'; // Choose from: 'crc32', 'md5', 'sha1'
-    }
-}
-```
-
-### Using the Bloom Filter
-
-```php
-namespace App\Services;
-
-use App\BloomFilters\UserEmailFilter;
 
 class UserService
 {
     public function __construct(
-        private readonly UserEmailFilter $emailFilter
+        private readonly BloomFilter $emailFilter
     ) {}
 
     public function isEmailRegistered(string $email): bool
@@ -95,29 +51,50 @@ class UserService
 }
 ```
 
+### Service Provider Registration
+
+Register the Bloom filter in your service provider:
+
+```php
+use Intimation\LaravelBloomFilter\BloomFilter;
+
+public function register(): void
+{
+    $this->app->singleton('email-filter', function ($app) {
+        return new BloomFilter(
+            key: 'users_email_filter',
+            size: 1000000,    // Size based on expected number of items
+            hashCount: 7,     // Number of hash functions
+            hashAlgorithm: 'md5'
+        );
+    });
+}
+```
+
 ### Available Methods
 
 - `add(string $value)`: Add an item to the Bloom filter
 - `exists(string $value)`: Check if an item might exist in the filter
 - `clear()`: Clear all items from the filter
 
-### Configuration
+### Configuration Parameters
 
-The Bloom filter requires three main parameters:
+The Bloom filter accepts four parameters:
 
-1. **Size**: The number of bits in the filter
+1. **key** (required): The Redis key to store the filter
+2. **size** (optional, default: 1000): The number of bits in the filter
    - Formula: `m = -n * ln(p) / (ln(2)^2)`
    - Where:
      - n = expected number of items
      - p = desired false positive probability
 
-2. **Hash Count**: Number of hash functions to use
+3. **hashCount** (optional, default: 3): Number of hash functions to use
    - Formula: `k = (m/n) * ln(2)`
    - Where:
      - m = size of the filter
      - n = expected number of items
 
-3. **Hash Algorithm**: Choose from:
+4. **hashAlgorithm** (optional, default: 'crc32'): Choose from:
    - `crc32`: Fastest but less collision-resistant
    - `md5`: Good balance of speed and collision resistance
    - `sha1`: Most collision-resistant but slower

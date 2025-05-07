@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\File;
 
 class LaravelBloomFilterCommand extends Command
 {
-    protected $signature = 'bloom-filter:make {name : The name of the Bloom filter class}';
+    protected $signature = 'make:bloom-filter {name : The name of the Bloom filter class}';
 
     protected $description = 'Create a new Bloom filter class';
 
@@ -32,6 +32,14 @@ class LaravelBloomFilterCommand extends Command
         File::put($path, $stub);
         $this->info("Bloom filter class {$name} created successfully!");
         $this->info("Path: {$path}");
+        $this->info("\nDon't forget to register your Bloom filter in a service provider:");
+        $this->info("```php");
+        $this->info("use App\\BloomFilters\\{$name};");
+        $this->info("");
+        $this->info("\$this->app->singleton('{$name}', function (\$app) {");
+        $this->info("    return new {$name}();");
+        $this->info("});");
+        $this->info("```");
     }
 
     protected function getStub(): string
@@ -45,6 +53,19 @@ use Intimation\LaravelBloomFilter\BloomFilter;
 
 class {{name}} extends BloomFilter
 {
+    /**
+     * Create a new Bloom filter instance.
+     */
+    public function __construct()
+    {
+        parent::__construct(
+            key: $this->getKey(),
+            size: $this->getSize(),
+            hashCount: $this->getHashCount(),
+            hashAlgorithm: $this->getHashAlgorithm()
+        );
+    }
+
     /**
      * Get the Redis key for this Bloom filter.
      * This key will be used to store the Bloom filter in Redis.
